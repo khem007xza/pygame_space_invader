@@ -1,0 +1,61 @@
+import pygame
+
+pygame.init()
+dis = pygame.display.set_mode((500,500))
+pygame.display.set_caption("my space invader")
+
+class Player():
+    def __init__(self, x, y):
+        self.image = pygame.image.load("image\player.png")
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+    def update(self):
+        dx = 0
+        key = pygame.key.get_pressed()
+
+        if key[pygame.K_a]:
+            dx -= 1
+        if key[pygame.K_d]:
+            dx += 1
+
+        self.rect.x += dx
+        dis.blit(self.image, self.rect)
+
+class Enemy(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		pygame.sprite.Sprite.__init__(self)
+		self.image = pygame.image.load("image\invader.png")
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+		self.move_direction = 1
+		self.move_counter = 0
+
+	def update(self):
+		self.rect.x += self.move_direction
+		self.move_counter += 1
+		if abs(self.move_counter) > 50:
+			self.move_direction *= -1
+			self.move_counter *= -1
+        
+		dis.blit(self.image, self.rect)
+    
+clock = pygame.time.Clock()
+player = Player(240,450)
+enemy_group = pygame.sprite.Group()
+enemy = Enemy(240, 100)
+enemy_group.add(enemy)
+run = True
+while run:
+    clock.tick(60)
+    dis.fill ((255 , 255 , 255)) 
+    player.update()
+    enemy_group.update()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+    pygame.display.update()
+pygame.quit()
